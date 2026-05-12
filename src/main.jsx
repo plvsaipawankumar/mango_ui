@@ -175,21 +175,22 @@ function App() {
     localStorage.setItem(orderStorageKey, JSON.stringify(updatedOrders));
     localStorage.setItem(`aamra-confirmed-order-${order.id}`, JSON.stringify(order));
   };
+  
   const syncOrderToGoogleSheet = async (order) => {
     if (!googleSheetWebAppUrl) {
       return { ok: false, reason: "Google Sheet endpoint is not configured." };
     }
-
+    console.log(JSON.stringify(order, null, 2));
     try {
       const response = await fetch(googleSheetWebAppUrl, {
         method: "POST",
-        mode: "cors",
+        redirect: "follow",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+          "Content-Type": "text/plain;charset=utf-8",
         },
-        body: new URLSearchParams({ payload: JSON.stringify(order) }),
+        
+        body: JSON.stringify(order),
       });
-
       if (!response.ok) {
         const errorText = await response.text().catch(() => "");
         return {
